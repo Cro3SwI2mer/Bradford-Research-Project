@@ -1,6 +1,6 @@
 # Bradford-Research-Project
-Research project carried in Advanced Automotive Analytics center in University of Bradford
+Project is related to prediction of behavior of drivers based on the information about their past jorneys
 
-Includes API and some tests for it
+It includes API and some tests for it, dataset is not disclosed due to NDA agreement
 
 Currently developed
