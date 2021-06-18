@@ -26,6 +26,11 @@ def binary_search(li, x):
 
 
 class Descriptor:
+
+    """
+    Returns basic info about dataset
+    """
+
     def __init__(self, dataframe: pd.DataFrame) -> None:
         self.dataframe = dataframe
         self.columns = self.dataframe.columns
@@ -52,6 +57,11 @@ class Descriptor:
 
 
 class TimeModifier:
+
+    """
+    Modifies type of data in columns, which contain time data
+    """
+
     def __init__(self, dataframe: pd.DataFrame, new_data=False) -> None:
         self.dataframe = dataframe
         self._new_data = new_data
@@ -70,6 +80,11 @@ class TimeModifier:
 
 
 class Transform:
+
+    """
+    Applies transformation of data to selected columns
+    """
+
     def __init__(self, dataframe: pd.DataFrame, new_data=False) -> None:
         self.dataframe = dataframe
         self._new_data = new_data
@@ -84,6 +99,11 @@ class Transform:
 
 
 class Adder:
+
+    """
+    Adds new columns to the dataset
+    """
+
     def __init__(self, dataframe: pd.DataFrame, new_data=False) -> None:
         self.dataframe = dataframe
         self._new_data = new_data
@@ -110,9 +130,9 @@ class Adder:
         if self._new_data:
             return self.dataframe
 
-    def time_zone(self, time_column, num_of_zones=6):
+    def time_zone(self, time_column, num_zones=6):
         timezones = []
-        interval = 24 * 3600 / num_of_zones
+        interval = 24 * 3600 / num_zones
         for i in range(len(self.dataframe)):
             delta = dt.datetime.strptime(str(self.dataframe[time_column][i]).split(' ')[1], "%H:%M:%S") - dt.datetime(
                 1900, 1, 1, 0, 0, 0)
@@ -121,41 +141,28 @@ class Adder:
         if self._new_data:
             return self.dataframe
 
-    def duration_zone(self, num_of_zones=6):
-        if 'duration' not in self.dataframe.columns:
-            raise ValueError("No column named 'duration'")
-        duration_zones = []
-        ma, mi = max(self.dataframe['duration']), min(self.dataframe['duration'])
-        interval = (ma - mi) / num_of_zones
-        for i in range(len(self.dataframe)):
-            if self.dataframe['duration'][i] == ma:
-                duration_zones.append(num_of_zones - 1)
-            else:
-                duration_zones.append(int((self.dataframe['duration'][i] - mi) // interval))
-        self.dataframe['duration_zone'] = duration_zones
-        if self._new_data:
-            return self.dataframe
-
-    def zone(self, *columns, num_of_zones: int):
+    def zone(self, *columns, num_zones: list):
+        assert 'StartTime' and 'StopTime' not in columns
+        assert len(columns) == len(num_zones)
         for column in columns:
             assert column not in list(Descriptor(self.dataframe).info()['object'].keys())
-        for column in columns:
+        for j, column in enumerate(columns):
             zones = []
             ma, mi = max(self.dataframe[column]), min(self.dataframe[column])
-            interval = (ma - mi) / num_of_zones
+            interval = (ma - mi) / num_zones[j]
             for i in range(len(self.dataframe)):
                 if self.dataframe[column][i] == ma:
-                    zones.append(num_of_zones - 1)
+                    zones.append(num_zones[j] - 1)
                 else:
-                    zones.append(int((self.dataframe['duration'][i] - mi) // interval))
+                    zones.append(int((self.dataframe[column][i] - mi) // interval))
             self.dataframe[column + '_zone'] = zones
         if self._new_data:
             return self.dataframe
 
-    def quantile(self, *columns, num_of_quantiles: int):
+    def quantile(self, *columns, num_quantiles: int):
         for column in columns:
             assert column not in list(Descriptor(self.dataframe).info()['object'].keys())
-        quantiles = [(i + 1) / num_of_quantiles for i in range(num_of_quantiles)]
+        quantiles = [(i + 1) / num_quantiles for i in range(num_quantiles)]
         for column in columns:
             column_values = sorted(list(self.dataframe[column]))
             quantile_indexes = [round(elem * (len(column_values) - 1)) for elem in quantiles]

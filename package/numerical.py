@@ -9,6 +9,11 @@ from scipy.spatial.distance import jensenshannon
 
 
 class Discrete:
+
+    """
+    Constructs a frequency map of appearance of a given parameter into particular area
+    """
+
     def __init__(self, dataframe: pd.DataFrame, *variables, parameter: str) -> None:
         self.dataframe = dataframe
         self.variables = variables
@@ -37,6 +42,11 @@ class Discrete:
 
 
 class PDF(Discrete):
+
+    """
+    Constructs a discrete pdf for a given parameter with one of the described methods
+    """
+
     def __init__(self, dataframe: pd.DataFrame, *variables, parameter: str, normalize=True) -> None:
         super(PDF, self).__init__(dataframe, *variables, parameter=parameter)
         self.normalize = normalize
@@ -96,6 +106,11 @@ class PDF(Discrete):
 
 
 class Stat(PDF):
+
+    """
+    Constructs a divergence matrix, calculated between all ordered pairs of given parameter
+    """
+
     def __init__(self, dataframe: pd.DataFrame, *variables, parameter: str, approach: str,
                  normalize=True, return_keys=True) -> None:
         super(Stat, self).__init__(dataframe, *variables, parameter=parameter, normalize=normalize)

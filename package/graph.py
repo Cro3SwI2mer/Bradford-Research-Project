@@ -2,7 +2,12 @@ import numpy as np
 import pandas as pd
 
 # TODO:
-#  1. Write a Class (into another .py file) which divided on clusters nodes of a weighted graph
+#  1. Write Vertex and Edge classes
+#  2. Rewrite Graph class as a child class of Vertex and Child
+
+# class Vertex:
+
+# class Edge:
 
 
 class Graph:
